@@ -1,0 +1,3 @@
+services:
+  views_exclude_previous.render_history:
+    class: Drupal\views_exclude_previous\EntityRenderHistory
