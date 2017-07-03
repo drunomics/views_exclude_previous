@@ -21,22 +21,46 @@ class EntityRenderHistory {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to add to the history.
+   * @param string $viewMode
+   *   The view mode, the entity was rendered with.
    */
-  public function add(EntityInterface $entity) {
-    $this->rendered[$entity->getEntityTypeId()][$entity->id()] = $entity->id();
+  public function add(EntityInterface $entity, $viewMode) {
+    $this->rendered[$entity->getEntityTypeId()]['entities'][$entity->id()] = $entity->id();
+    $this->rendered[$entity->getEntityTypeId()]['view_modes'][$entity->id()] = $viewMode;
   }
 
   /**
-   * Gets all already rendered entities.
+   * Gets all already rendered entities, filtered by view modes.
    *
    * @param string $entityTypeId
    *   The entity type id.
+   * @param array $viewModes
+   *   The view modes.
    *
    * @return int[]
    *   The list of entity ids of the rendered entities.
    */
-  public function getRenderedEntities($entityTypeId) {
-    return isset($this->rendered[$entityTypeId]) ? $this->rendered[$entityTypeId] : [];
+  public function getRenderedEntities($entityTypeId, array $viewModes) {
+    if (!isset($this->rendered[$entityTypeId])) {
+      return [];
+    }
+
+    $entities = $this->rendered[$entityTypeId]['entities'];
+
+    if (!empty($viewModes) && $viewModes[0] != 'all') {
+
+      $entities = array_filter($entities, function ($entity_id) use ($entityTypeId, $viewModes) {
+        if (!empty($this->rendered[$entityTypeId]['view_modes'][$entity_id])
+          && in_array($this->rendered[$entityTypeId]['view_modes'][$entity_id], $viewModes)) {
+          return TRUE;
+        }
+        return FALSE;
+      });
+
+    }
+
+    return $entities;
+
   }
 
 }

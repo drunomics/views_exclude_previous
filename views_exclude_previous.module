@@ -16,5 +16,5 @@ function views_exclude_previous_entity_build_defaults_alter(array &$build, Entit
   // when the entity is in render cache.
   $render_history = \Drupal::service('views_exclude_previous.render_history');
   assert($render_history instanceof EntityRenderHistory);
-  $render_history->add($entity);
+  $render_history->add($entity, $view_mode);
 }
