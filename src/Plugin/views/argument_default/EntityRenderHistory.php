@@ -3,6 +3,7 @@
 namespace Drupal\views_exclude_previous\Plugin\views\argument_default;
 
 use Drupal\Core\Entity\EntityType;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\argument_default\ArgumentDefaultPluginBase;
 use drunomics\ServiceUtils\Core\Entity\EntityTypeManagerTrait;
@@ -19,7 +20,39 @@ use Drupal\views_exclude_previous\EntityRenderHistoryTrait;
 class EntityRenderHistory extends ArgumentDefaultPluginBase {
 
   use EntityRenderHistoryTrait;
-  use EntityTypeManagerTrait;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Sets the entity type.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   *
+   * @return $this
+   */
+  public function setEntityTypeManager(EntityTypeManagerInterface $entityTypeManager) {
+    $this->entityTypeManager = $entityTypeManager;
+    return $this;
+  }
+
+  /**
+   * Gets the entity type manager.
+   *
+   * @return \Drupal\Core\Entity\EntityTypeManagerInterface
+   *   The entity type manager.
+   */
+  public function getEntityTypeManager() {
+    if (empty($this->entityTypeManager)) {
+      $this->entityTypeManager = \Drupal::entityTypeManager();
+    }
+    return $this->entityTypeManager;
+  }
 
   /**
    * {@inheritdoc}
