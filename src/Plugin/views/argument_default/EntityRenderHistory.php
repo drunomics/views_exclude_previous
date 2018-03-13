@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityType;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\argument_default\ArgumentDefaultPluginBase;
-use drunomics\ServiceUtils\Core\Entity\EntityTypeManagerTrait;
 use Drupal\views_exclude_previous\EntityRenderHistoryTrait;
 
 /**
