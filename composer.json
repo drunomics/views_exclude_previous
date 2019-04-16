@@ -1,0 +1,11 @@
+{
+    "name": "drunomics/views_exclude_previous",
+    "description": "Exclude previously rendered entities.",
+    "type": "drupal-module",
+    "keywords": ["drupal"],
+    "authors": [
+        {
+            "name": "drunomics GmbH"
+        }
+    ]
+}
