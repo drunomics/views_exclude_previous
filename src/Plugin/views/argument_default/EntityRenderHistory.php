@@ -54,6 +54,19 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
   }
 
   /**
+   * Retrieves the currently active request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\Request
+   *   The currently active request object.
+   */
+  public function getCurrentRequest() {
+    if (empty($this->entityTypeManager)) {
+      $this->entityTypeManager = \Drupal::request();
+    }
+    return $this->entityTypeManager;
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function defineOptions() {
@@ -84,6 +97,14 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
   public function getArgument() {
     $ids = $this->getEntityRenderHistory()
       ->getRenderedEntities($this->options['entity_type_id']);
+
+    if (!$ids) {
+      // Try to get the excluded ids from the current ajax request.
+      $excluded_ids = $this->getCurrentRequest()->get('views_exclude_previous_ids');
+      if (!empty($excluded_ids[$this->options['entity_type_id']])) {
+        $ids = $excluded_ids[$this->options['entity_type_id']];
+      }
+    }
 
     // If no IDs are given, by-pass the filter.
     return implode('+', $ids) ?: 'all';

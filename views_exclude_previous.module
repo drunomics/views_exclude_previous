@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\views_exclude_previous\EntityRenderHistory;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_entity_build_defaults_alter().
@@ -17,4 +18,74 @@ function views_exclude_previous_entity_build_defaults_alter(array &$build, Entit
   $render_history = \Drupal::service('views_exclude_previous.render_history');
   assert($render_history instanceof EntityRenderHistory);
   $render_history->add($entity);
+}
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function views_exclude_previous_views_pre_build(ViewExecutable $view) {
+  if ($types = _views_exclude_previous_get_excluded_entity_types($view)) {
+    /** @var \Drupal\views_exclude_previous\EntityRenderHistory $service */
+    $service = \Drupal::service('views_exclude_previous.render_history');
+    foreach ($types as $type) {
+      // Add the excluded ids to the views drupal settings before the view is
+      // rendered.
+      $view->element['#attached']['drupalSettings']['views_exclude_previous_ids'][$type] = $service->getRenderedEntities($type);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function views_exclude_previous_views_pre_render(ViewExecutable $view) {
+  if (_views_exclude_previous_get_excluded_entity_types($view)) {
+    // Add the excluded ids to the views ajax settings. They will be transferred
+    // via an ajax request.
+    if (!empty($view->element['#attached']['drupalSettings']['views']['ajaxViews'])) {
+      foreach ($view->element['#attached']['drupalSettings']['views']['ajaxViews'] as &$settings) {
+        $settings['views_exclude_previous_ids'] = $view->element['#attached']['drupalSettings']['views_exclude_previous_ids'];
+      }
+    }
+    // Add support for the ajax_assets_plus module.
+    if (!empty($view->element['#attached']['drupalSettings']['ajaxAssetsPlus']['views']['ajaxViews'])) {
+      foreach ($view->element['#attached']['drupalSettings']['ajaxAssetsPlus']['views']['ajaxViews'] as &$settings) {
+        $settings['views_exclude_previous_ids'] = $view->element['#attached']['drupalSettings']['views_exclude_previous_ids'];
+      }
+    }
+  }
+}
+
+/**
+ * Gets excluded entity types from the view.
+ *
+ * @param \Drupal\views\ViewExecutable $view
+ *   The view.
+ *
+ * @return string[]|null
+ *   The excluded entity types from the view, null if not found.
+ */
+function _views_exclude_previous_get_excluded_entity_types(ViewExecutable $view) {
+  $types = [];
+  foreach ($view->argument as $argument) {
+    if (!empty($argument->options['default_argument_type'])) {
+      if ($argument->options['default_argument_type'] == 'views_exclude_default_render_history') {
+        $type = $argument->options['default_argument_options']['entity_type_id'];
+        $types[$type] = $type;
+      }
+    }
+  }
+  return $types;
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function views_exclude_previous_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'views_pre_render') {
+    // Make sure views_exclude_previous_views_pre_render() is executed last.
+    $group = $implementations['views_exclude_previous'];
+    unset($implementations['views_exclude_previous']);
+    $implementations['views_exclude_previous'] = $group;
+  }
 }
