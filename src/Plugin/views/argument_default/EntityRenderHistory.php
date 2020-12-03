@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\argument_default\ArgumentDefaultPluginBase;
 use Drupal\views_exclude_previous\EntityRenderHistoryTrait;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Default argument plugin to exclude previously rendered entities.
@@ -26,6 +27,13 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * The currently active request object.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $request;
 
   /**
    * Sets the entity type.
@@ -54,16 +62,29 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
   }
 
   /**
+   * Sets the currently active request object.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The currently active request object.
+   *
+   * @return $this
+   */
+  public function setCurrentRequest(Request $request) {
+    $this->request = $request;
+    return $this;
+  }
+
+  /**
    * Retrieves the currently active request object.
    *
    * @return \Symfony\Component\HttpFoundation\Request
    *   The currently active request object.
    */
   public function getCurrentRequest() {
-    if (empty($this->entityTypeManager)) {
-      $this->entityTypeManager = \Drupal::request();
+    if (empty($this->request)) {
+      $this->request = \Drupal::request();
     }
-    return $this->entityTypeManager;
+    return $this->request;
   }
 
   /**
@@ -98,11 +119,11 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
     $ids = $this->getEntityRenderHistory()
       ->getRenderedEntities($this->options['entity_type_id']);
 
-    if (!$ids) {
-      // Try to get the excluded ids from the current ajax request.
-      $excluded_ids = $this->getCurrentRequest()->get('views_exclude_previous_ids');
+    // Try to get the excluded ids from the current ajax request.
+    $excluded_ids = $this->getCurrentRequest()->get('views_exclude_previous_ids');
+    if ($excluded_ids) {
       if (!empty($excluded_ids[$this->options['entity_type_id']])) {
-        $ids = $excluded_ids[$this->options['entity_type_id']];
+        $ids = array_merge($ids, $excluded_ids[$this->options['entity_type_id']]);
       }
     }
 
