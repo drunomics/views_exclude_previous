@@ -121,12 +121,9 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
 
     // Try to get the excluded ids from the current ajax request.
     $excluded_ids = $this->getCurrentRequest()->get('views_exclude_previous_ids');
-    if ($excluded_ids) {
-      if (!empty($excluded_ids[$this->options['entity_type_id']])) {
-        $ids = array_merge($ids, $excluded_ids[$this->options['entity_type_id']]);
-      }
+    if (!empty($excluded_ids[$this->options['entity_type_id']])) {
+      $ids = array_merge($ids, $excluded_ids[$this->options['entity_type_id']]);
     }
-
     // If no IDs are given, by-pass the filter.
     return implode('+', $ids) ?: 'all';
   }
