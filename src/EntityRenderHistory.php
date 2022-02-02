@@ -36,7 +36,7 @@ class EntityRenderHistory {
    *   The list of entity ids of the rendered entities.
    */
   public function getRenderedEntities($entityTypeId) {
-    return isset($this->rendered[$entityTypeId]) ? $this->rendered[$entityTypeId] : [];
+    return $this->rendered[$entityTypeId] ?? [];
   }
 
 }
