@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\argument_default\ArgumentDefaultPluginBase;
 use Drupal\views_exclude_previous\EntityRenderHistoryTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Default argument plugin to exclude previously rendered entities.
@@ -19,6 +20,23 @@ use Drupal\views_exclude_previous\EntityRenderHistoryTrait;
 class EntityRenderHistory extends ArgumentDefaultPluginBase {
 
   use EntityRenderHistoryTrait;
+
+  /**
+   * The service container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
+   */
+  protected $container;
+
+  /**
+   * Constructs a container aware event dispatcher.
+   *
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   The service container.
+   */
+  public function __construct(ContainerInterface $container) {
+    $this->container = $container;
+  }
 
   /**
    * The entity type manager.
@@ -47,8 +65,8 @@ class EntityRenderHistory extends ArgumentDefaultPluginBase {
    *   The entity type manager.
    */
   public function getEntityTypeManager() {
-    if (empty($this->entityTypeManager)) {
-      $this->entityTypeManager = \Drupal::entityTypeManager();
+    if (!isset($this->entityTypeManager)) {
+      $this->entityTypeManager = $this->container->get('entity_type.manager');
     }
     return $this->entityTypeManager;
   }
