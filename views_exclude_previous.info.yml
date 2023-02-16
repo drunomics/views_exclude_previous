@@ -1,5 +1,5 @@
 name: Views exclude previous
 type: module
 description: Excludes previously rendered entities.
-core_version_requirement: ^8.8 || ^9
+core_version_requirement: ^8.8 || ^9 || ^10
 package: Views
