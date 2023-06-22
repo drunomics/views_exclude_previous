@@ -54,4 +54,4 @@ and using the default 'Unformatted', 'List', 'Grid' or 'Table' styles.
 It will also track nodes that are loaded/prepared for viewing using the nodeapi.
 If you know of any module that embeds nodes/lists/etc in pages,
 please report whether they work/don't work with Views exclude
-previous so that the compatibility list can be kept up to date.
+previous so that the compatibility list can be kept up to date. 
