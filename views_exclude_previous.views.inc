@@ -26,7 +26,7 @@ function views_exclude_previous_views_post_execute(ViewExecutable $view) {
   if (in_array('node_field_data', array_keys($view->getBaseTables()))) {
     foreach ($view->result as $result) {
       if (!empty($result->nid)) {
-        _views_exclude_previous('views', $result->nid);
+        views_exclude_previous_remove('views', $result->nid);
       }
     }
   }

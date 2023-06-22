@@ -17,7 +17,7 @@ class ViewsExcludePreviousNodes extends InOperator {
    * {@inheritdoc}
    */
   public function getValueOptions() {
-    // @todo: Make this pluggable.
+    // @todo Make this pluggable.
     $this->valueOptions = [
       'node_load' => 'Exclude nodes previously loaded (hook_node_load).',
       'node_view' => 'Exclude nodes previously viewd (hook_node_view).',
@@ -42,7 +42,7 @@ class ViewsExcludePreviousNodes extends InOperator {
    */
   public function operatorOptions($which = 'title') {
     return [
-      'not in' => t('Is not in'),
+      'not in' => $this->t('Is not in'),
     ];
   }
 
@@ -61,7 +61,7 @@ class ViewsExcludePreviousNodes extends InOperator {
     }
     $excludes = [];
     foreach ($this->value as $category) {
-      $excludes += _views_exclude_previous($category);
+      $excludes += views_exclude_previous_remove($category);
     }
 
     if (!empty($excludes)) {

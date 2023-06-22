@@ -26,7 +26,7 @@ function views_exclude_previous_help($route_name, RouteMatchInterface $route_mat
  */
 function views_exclude_previous_node_load($nodes) {
   foreach ($nodes as $nid => $node) {
-    _views_exclude_previous('node_load', $nid);
+    views_exclude_previous_remove('node_load', $nid);
   }
 }
 
@@ -34,7 +34,7 @@ function views_exclude_previous_node_load($nodes) {
  * Implements hook_ENTITY_TYPE_view() for node entities.
  */
 function views_exclude_previous_node_view(array &$build, EntityInterface $node, EntityViewDisplayInterface $display, $view_mode) {
-  _views_exclude_previous('node_view', $node->id());
+  views_exclude_previous_remove('node_view', $node->id());
 }
 
 /**
@@ -50,7 +50,7 @@ function views_exclude_previous_node_view(array &$build, EntityInterface $node, 
  * @return array
  *   Always returns the given category.
  */
-function _views_exclude_previous($cat, $nid = NULL) {
+function views_exclude_previous_remove($cat, $nid = NULL) {
   $excludes = & drupal_static(__FUNCTION__);
 
   // Add nid to be excluded in the current category.
